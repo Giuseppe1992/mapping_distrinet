@@ -31,12 +31,7 @@ class CloudInstance(object):
     @classmethod
     def read_ec2_instances(cls, vm_type="general_purpose"):
         with open(
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                "instances",
-                "ec2",
-                vm_type + ".json",
-            )
+            os.path.join(vm_type + ".json",)
         ) as f:
             vm_options = json.load(f)
         # gibibyte to mebibyte conversion
