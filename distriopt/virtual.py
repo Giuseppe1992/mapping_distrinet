@@ -155,11 +155,25 @@ class VirtualNetwork(object):
     ):
         """create a random network."""
         g = nx.gnp_random_graph(n_nodes, p=p, seed=seed, directed=False)
+        c = 0
+        while not nx.is_connected(g):
+            g = nx.gnp_random_graph(n_nodes, p=p, seed=(seed*10000000)+c, directed=False)
+            c += 1
+            assert c < 10000000, f"random graph not created after 100 iterations, consider to use higher p, p={p}"
+        print(f"random network generated after {c} trials, seed={(seed*10000000)+c}")
+        g=nx.relabel_nodes(g, {x: f"core_{x}" for x in g})
+        #host can be connected to the last part of the switches
+        switch_nodes = sorted(g)[int(len(sorted(g))/2):]
+
+        for n in range(n_nodes):
+            g.add_node(f'host_{n}')
+            g.add_edge(f'host_{n}', random.choice(switch_nodes))
+
         for (u, v) in g.edges():
-            g[u][v]["rate"] = req_rate
+            g[u][v]["rate"] = req_rate if type(req_rate) == int else random.choice(req_rate)
         for u in g.nodes():
-            g.nodes[u]["cores"] = req_cores
-            g.nodes[u]["memory"] = req_memory
+            g.nodes[u]["cores"] = req_cores if type(req_cores) == int else random.choice(req_cores)
+            g.nodes[u]["memory"] = req_memory if type(req_memory) == int else random.choice(req_memory)
         return cls(nx.freeze(g))
 
     @classmethod
@@ -185,7 +199,6 @@ class VirtualNetwork(object):
         from mininet.topo import Topo
 
         assert isinstance(mininet_topo, Topo), "Invalid Network Format"
-
         g = nx.Graph()
 
         for u in mininet_topo.nodes():
