@@ -69,7 +69,7 @@ class VirtualNetwork(object):
 
     @classmethod
     def create_fat_tree(
-        cls, k=2, density=2, req_cores=2, req_memory=2000, req_switch_cores=2, req_switch_memory=4000, req_rate=200
+        cls, k=2, density=2, req_cores=2, req_memory=2000, req_switch_cores=2, req_switch_memory=2000, req_rate=200
     ):
         """create a K-ary FatTree with host density set to density.
 
