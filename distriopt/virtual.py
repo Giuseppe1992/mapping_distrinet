@@ -69,7 +69,7 @@ class VirtualNetwork(object):
 
     @classmethod
     def create_fat_tree(
-        cls, k=2, density=2, req_cores=2, req_memory=4000, req_rate=200
+        cls, k=2, density=2, req_cores=2, req_memory=2000, req_switch_cores=2, req_switch_memory=4000, req_rate=200
     ):
         """create a K-ary FatTree with host density set to density.
 
@@ -98,9 +98,15 @@ class VirtualNetwork(object):
 
         g = nx.Graph()
         g.add_nodes_from(
-            itertools.chain(hosts, core_switches, aggr_switches, edge_switches),
+            itertools.chain(hosts),
             cores=req_cores,
             memory=req_memory,
+        )
+
+        g.add_nodes_from(
+            itertools.chain(core_switches, aggr_switches, edge_switches),
+            cores=req_switch_cores,
+            memory=req_switch_memory,
         )
 
         # Core to Aggr
